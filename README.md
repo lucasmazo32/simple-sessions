@@ -8,16 +8,28 @@ The objective of this gem is to make your life easier when creating sessions. Cr
 
 After running `bundle update` and `bundle` you should be able to run:
 
-> `rails g simple` *or* `rails g advanced`
+> `rails g simple NAME` *or* `rails g advanced NAME`
 
 ## How does it work?
 
 It will automatically generate the view, controller, helper, test (for this version there are no automatic tests!), routes in your config/routes.rb and add the SessionsHelper to your ApplicationController.
 
+For this program, 'NAME' means the name of the database. Taking into consideration that the database should be singular (like User), you should write the name in singular. It doesn't matter if you write it in capital letters or downcase, the program will automatically recognize it. What it doesn't understand is the plural version of the word.
+
+*e.g:*
+
+> `rails g advanced user` *correct*
+
+> `rails g advanced users` *wrong!*
+
+You can always run `rails destroy advanced NAME` or `rails destroy simple NAME`, but remember that if you had a mistake writing the name, you probably are going to get an error (although most of the times you can ignore them).
+
+I strongly recommend creating the user's database before running this command, because it will generate a migration to add the column **remember_digest** to your user's schema.
+
 ## Which one to pick
 Simple sessions are an easy way of making your sessions. Those only include a cookie with an encrypted user_id which will expire after the browser is closed. This is an easy way of testing your apps in your localhost without expending time in creating the functions necessary for creating sessions.
 
-Advanced sessions also include cookies that expire in 20 years (Thus, permanent). They cover more functions and is more secure (User's id is saved encrypted in a cookie, and for the remember_digest, I use SHA2 hash security and a urlsafe_base64 for generating the tokens that will go in the remember column.
+Advanced sessions also include cookies that expire in 20 years (Thus, permanent). They cover more functions and is more secure (User's id is saved encrypted in a cookie, and for the remember_digest, I use BCrypt hash security and a urlsafe_base64 for generating the tokens that will go in the remember column.
 
 ## Files generated and recommendations
 
@@ -26,6 +38,7 @@ Advanced sessions also include cookies that expire in 20 years (Thus, permanent)
 - `sessions_controller_test.rb`: File in which you can generate your tests for the session.
 - `sessions_controller.rb`: File in which the logic of finding the right user lives. This file doesn't change too much between *simple* and *advanced*.
 - `sessions_helper.rb`: All the logic involving the sessions live here. The cookies and session information lives in here.
+- `migration file (ONLY FOR ADVANCED)`: It will create a migration to add the column **remember_digest** to the database for your users.
 
 ### new.html.erb
 ```
@@ -148,102 +161,15 @@ module SessionsHelper
 end
 ```
 
-## Important reminder
-
-I created this file taking into consideration the widely used convention of naming the user model as User and using the username as the parameter to look for the user. In case one of them, or both, ar different in your application, change them manually.
-
-# Previous versions (The guide will be available, but I strongly recommend updating your version to 0.2.0 because you will have to do manual work)
-
-How to use it
-
-To use them, you should create the session controller writing the following command in your terminal:
-
-> $ rails g controller Sessions new
-
-Specify the correct routes and then go to the session helper and copy these two lines:
-
-> `require 'simple_sessions'`
-
-> `include Simple` *or* `include Advanced`
-
-- Only include one: either Simple or Advanced. Continue reading to find out the difference.
-
-## Which one to pick
-Simple sessions are an easy way of making your sessions. Those only include a cookie with an encrypted user_id which will expire after the browser is closed. This is an easy way of testing your apps in your localhost without expending time in creating the functions necessary for creating sessions.
-
-Advanced sessions also include cookies that expire in 20 years (Thus, permanent). They cover more functions and is more secure (User's id is saved encrypted in a cookie, and for the remember_digest, I use SHA2 hash security and a urlsafe_base64 for generating the tokens that will go in the remember column. 
-
-## include Simple
-
-Functions:
-
-> `log_in(user)`: As the name says, it logs in the user.
-current_user: It tells you the name of the current user or nil if there is no current user.
-
-> `logged_in?`: It tells you if there is a signed user or not.
->`log_out`: logs the user out.
-
-Instance variables:
-
-> `@current_user`: This can be used if needed in your views. It has the hash containing all the user's information.
-
-## include Advanced
-Functions:
-
->`create_session(user)`: We used log_in for logging in the user in the simple session, but since this one creates a remember_digest and cookies with other information.
-
->`current_user`: It tells you the name of the current user or nil if there is no current user.
-
->`logged_in?`: It tells you if there is a signed user or not.
-
->`log_out`: logs the user out.
-
-Instance variables:
-
-> `@current_user`: This can be used if needed in your views. It has the hash containing all the user's information.
-
-# Session controller
-
-## Example for simple Session Controller
+### time_add_remember_digest_to_NAME.rb
 ```
-  def new; end
-
-  def create
-    user = User.find_by(username: params[:session][:username].downcase)
-    if user&.authenticate(params[:session][:password])
-      log_in user
-      redirect_to user
-    else
-      flash.now[:danger] = 'Invalid username/password combination'
-      render 'new'
-    end
+class AddRememberDigestToName < ActiveRecord::Migration[X.0]
+  def change
+    add_column :names, :remember_digest, :string
   end
-
-  def destroy
-    log_out
-    redirect_to root_path
-  end
+end
 ```
-## Example for Advanced Session controller
-```
-  def new; end
 
-  def create
-    user = User.find_by(username: params[:session][:username].downcase)
-    if user&.authenticate(params[:session][:password])
-      create_session user
-      redirect_to user
-    else
-      flash.now[:danger] = 'Invalid username/password combination'
-      render 'new'
-    end
-  end
-
-  def destroy
-    log_out
-    redirect_to root_path
-  end
-```
 # Recommendations
 Use rails 5.0.0 or newer versions.
 

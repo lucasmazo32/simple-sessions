@@ -108,4 +108,8 @@ end
     RUBY
     end
   end
+
+  def migration
+    generate 'migration', "add_remember_digest_to_#{file_name.downcase}s remember_digest:string"
+  end
 end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class SimpleGenerator < Rails::Generators::Base
+class SimpleGenerator < Rails::Generators::NamedBase
   source_root File.expand_path('templates', __dir__)
 
   # Adds the helper, view, controller, test, routes and includes the
