@@ -1,10 +1,10 @@
 # Simple sessions
 
-To use the gem type `gem 'simple_sessions', '~> 0.2.0'` in your Gemfile.
+To use the gem type `gem 'simple_sessions', '~> 0.2.1'` in your Gemfile.
 
 The objective of this gem is to make your life easier when creating sessions. Creating sessions (especially the ones with permanent secure cookies) can be difficult or can take up some time for the programmer; therefore, I hope this will make your life easier.
 
-# Version 0.2.0
+# Version 0.2.1
 
 After running `bundle update` and `bundle` you should be able to run:
 
