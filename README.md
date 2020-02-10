@@ -10,6 +10,8 @@ After running `bundle update` and `bundle` you should be able to run:
 
 > `rails g simple NAME` *or* `rails g advanced NAME`
 
+I strongly recommend NOT to run the programm if you already have a session controller. This will generate conflicts with the files that are going to be created.
+
 ## How does it work?
 
 It will automatically generate the view, controller, helper, test (for this version there are no automatic tests!), routes in your config/routes.rb and add the SessionsHelper to your ApplicationController.

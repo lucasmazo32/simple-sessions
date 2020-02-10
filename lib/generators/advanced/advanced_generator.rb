@@ -92,6 +92,9 @@ end
   include SessionsHelper
     RUBY
     end
+  end
+
+  def inject_user
     inject_into_file "app/models/#{file_name.downcase}.rb", after: "class #{file_name.capitalize} < ApplicationRecord\n" do <<-'RUBY'
   attr_accessor :remember_token
   ############
@@ -105,7 +108,7 @@ end
     BCrypt::Password.new(remember_digest).is_password?(remember_token)
   end
   ############
-    RUBY
+        RUBY
     end
   end
 
