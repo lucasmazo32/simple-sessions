@@ -27,10 +27,10 @@ module Advanced
   end
 
   def remember(user)
-    cookies.permanent.signed[:user_id] = user.id
+    cookies.permanent.signed[:id] = user.id
     token = SecureRandom.urlsafe_base64
     cookies.permanent[:remember_token] = token
-    user.remember_digest = Digest::SHA2.hexdigest token
+    user.remember(token)
   end
 
   def create_session(user)
@@ -43,9 +43,8 @@ module Advanced
       @current_user ||= User.find_by(id: session[:user_id])
     elsif cookies.signed[:id]
       user = User.find_by(id: cookies.signed[:id])
-      cond1 = Digest::SHA2.hexdigest(cookies[:remember_token]) ==
-              user.remember_digest
-      if user & cond1
+      cond1 = user.authenticated?(cookies[:remember_token])
+      if user && cond1
         @current_user ||= user
         session[:user_id] = user.id
       end
